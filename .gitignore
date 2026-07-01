@@ -1,0 +1,18 @@
+# Jenkins
+jenkins/data/
+jenkins/data/**
+
+# Docker
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
