@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Repository already checked out by Jenkins'
+                echo 'Checking out source code...'
             }
         }
 
@@ -18,20 +18,52 @@ pipeline {
             }
         }
 
-        stage('List Docker Images') {
+        stage('Remove Old Container') {
             steps {
-                sh 'docker images'
+                sh '''
+                docker rm -f enterprise-web || true
+                '''
             }
         }
+
+        stage('Run Container') {
+            steps {
+                sh '''
+                docker run -d \
+                --name enterprise-web \
+                -p 8081:80 \
+                enterprise-web:v1
+                '''
+            }
+        }
+
+        stage('Verify Container') {
+            steps {
+                sh '''
+                docker ps
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                curl http://localhost:8081
+                '''
+            }
+        }
+
     }
 
     post {
+
         success {
-            echo 'Docker image built successfully!'
+            echo 'Application deployed successfully.'
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'Deployment failed.'
         }
+
     }
 }
